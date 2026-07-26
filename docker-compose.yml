@@ -160,6 +160,23 @@ services:
       - "5601:5601"
     networks: [elastic]
 
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
+    container_name: filebeat
+    user: root
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./certs/ca:/usr/share/filebeat/certs/ca:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: filebeat -e --strict.perms=false
+    networks: [elastic]
+
 volumes:
   es-data-master-1:
   es-data-master-2:

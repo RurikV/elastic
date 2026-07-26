@@ -1,0 +1,31 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+      templates:
+        - condition.contains:
+            docker.container.image: elastic
+          config:
+            - type: filestream
+              id: filebeat-${data.docker.container.id}
+              paths:
+                - /var/lib/docker/containers/${data.docker.container.id}/*.log
+              parsers:
+                - container: ~
+              prospector.scanner.symlinks: true
+
+processors:
+  - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+  - add_host_metadata: ~
+
+output.elasticsearch:
+  hosts: ["https://es-hot-1:9200"]
+  username: "elastic"
+  password: "${ELASTIC_PASSWORD}"
+  ssl.certificate_authorities: ["/usr/share/filebeat/certs/ca/ca.crt"]
+  ssl.verification_mode: "full"
+  index: "self-monitoring"
+
+setup.ilm.enabled: false
+setup.template.enabled: false
