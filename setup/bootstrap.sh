@@ -37,11 +37,15 @@ curl -fsS --cacert "$CACERT" -u "$AUTH" -X PUT \
   -d @/policies/self-monitoring-template.json
 echo
 
-echo "Bootstrapping first self-monitoring index ..."
-curl -fsS --cacert "$CACERT" -u "$AUTH" -X PUT \
-  "${ES}/self-monitoring-000001" \
-  -H 'Content-Type: application/json' \
-  -d '{"aliases":{"self-monitoring":{"is_write_index":true}}}'
+echo "Bootstrapping first self-monitoring index (skipped if it already exists) ..."
+if curl -fsS --cacert "$CACERT" -u "$AUTH" "${ES}/self-monitoring-000001" >/dev/null 2>&1; then
+  echo "  self-monitoring-000001 already exists, skipping."
+else
+  curl -fsS --cacert "$CACERT" -u "$AUTH" -X PUT \
+    "${ES}/self-monitoring-000001" \
+    -H 'Content-Type: application/json' \
+    -d '{"aliases":{"self-monitoring":{"is_write_index":true}}}'
+fi
 echo
 
 echo "Bootstrap complete."
