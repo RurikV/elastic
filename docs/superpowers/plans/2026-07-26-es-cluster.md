@@ -665,6 +665,7 @@ Add inside `services:` (after `setup`):
       - ELASTICSEARCH_HOSTS=https://es-hot-1:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+      - KIBANA_SYSTEM_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
     volumes:
       - ./config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
@@ -948,3 +949,18 @@ git commit -m "docs: add README, architecture, and screenshots directory"
 **Placeholder scan:** none. Every code step contains full content; every verify step has an exact command + expected output.
 
 **Type/name consistency:** `self-monitoring-policy`, `self-monitoring-template`, `self-monitoring` alias, `self-monitoring-000001` used consistently across Tasks 4, 6, 7. `ELASTIC_PASSWORD` / `KIBANA_SYSTEM_PASSWORD` consistent in `.env`, configs, compose, scripts. Cert paths `certs/ca/ca.crt` + `certs/instance/node.{crt,key}` consistent in configs, generate-certs.sh, and mounts.
+
+---
+
+## Implementation notes (deviations during build — all due to ES/Beats 9.4.4)
+
+The committed code is the source of truth. The task templates above were corrected during implementation for these 9.x realities; the **committed `README.md` / configs / scripts reflect the working versions**, not the templates verbatim:
+
+1. **`setup/generate-certs.sh`** — unzip `ca.zip` immediately after CA generation, *before* `certutil cert` (the CA `ca.crt`/`ca.key` live inside `ca.zip`; the original ordering failed with `NoSuchFileException`).
+2. **`setup/bootstrap.sh`** — idempotent: `PUT self-monitoring-000001` is skipped if the index already exists, so re-runs of `docker compose up` exit 0 and Kibana/Filebeat (`depends_on: service_completed_successfully`) stay satisfied.
+3. **Kibana** — `KIBANA_SYSTEM_PASSWORD` is exposed into the container env so `kibana.yml`'s `${KIBANA_SYSTEM_PASSWORD}` resolves. Kibana 9.x validates `${VAR}` references at config parse time and crashes if the var is absent (the `ELASTICSEARCH_PASSWORD` override never gets a chance to apply).
+4. **Filebeat (9.x Beats)** — `--strict.perms=false` (single-dash `-strict.perms` is invalid cobra syntax); `type: filestream` + `parsers: - container: ~` (the `container` input was removed in 9.x); `ssl.certificate_authorities` (plural; the singular key is silently ignored); modern nested `condition: contains:` with `hints.enabled: false` (the legacy `condition.contains:` form over-matched and harvested unrelated containers).
+5. **`_ilm/move` (ES 9)** — path-style endpoint `_ilm/move/<index>`; a `next_step` object (not `next_step_name`); step `name` is `check-rollover-ready` (read from `_ilm/explain`).
+6. **Port** — `es-hot-1` is mapped to host port **9201** (`9201:9200`) because port 9200 was occupied on the dev machine. Use 9200 if free.
+7. **`self-monitoring` volume** — the index was enriched once by clearing Filebeat's registry (re-harvest) so screenshots show a healthy stream of component logs.
+8. **Topology label** — the cluster is **7 nodes** (3 master + 2 hot + 2 warm); the original "5-node" label in some early docs was a miscount. `README.md` and `docs/architecture.md` use the correct "7-node" wording.
