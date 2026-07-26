@@ -1,0 +1,136 @@
+name: elastic-homework
+
+services:
+  es-master-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-master-1
+    environment:
+      - node.name=es-master-1
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ./config/es-master.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./certs/ca:/usr/share/elasticsearch/config/certs/ca:ro
+      - ./certs/instance:/usr/share/elasticsearch/config/certs/instance:ro
+      - es-data-master-1:/usr/share/elasticsearch/data
+    mem_limit: 1g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    networks: [elastic]
+
+  es-master-2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-master-2
+    environment:
+      - node.name=es-master-2
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ./config/es-master.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./certs/ca:/usr/share/elasticsearch/config/certs/ca:ro
+      - ./certs/instance:/usr/share/elasticsearch/config/certs/instance:ro
+      - es-data-master-2:/usr/share/elasticsearch/data
+    mem_limit: 1g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    networks: [elastic]
+
+  es-master-3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-master-3
+    environment:
+      - node.name=es-master-3
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ./config/es-master.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./certs/ca:/usr/share/elasticsearch/config/certs/ca:ro
+      - ./certs/instance:/usr/share/elasticsearch/config/certs/instance:ro
+      - es-data-master-3:/usr/share/elasticsearch/data
+    mem_limit: 1g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    networks: [elastic]
+
+  es-hot-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-hot-1
+    environment:
+      - node.name=es-hot-1
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - ./config/es-hot.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./certs/ca:/usr/share/elasticsearch/config/certs/ca:ro
+      - ./certs/instance:/usr/share/elasticsearch/config/certs/instance:ro
+      - es-data-hot-1:/usr/share/elasticsearch/data
+    ports:
+      - "9201:9200"
+    mem_limit: 2g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    networks: [elastic]
+
+  es-hot-2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-hot-2
+    environment:
+      - node.name=es-hot-2
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - ./config/es-hot.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./certs/ca:/usr/share/elasticsearch/config/certs/ca:ro
+      - ./certs/instance:/usr/share/elasticsearch/config/certs/instance:ro
+      - es-data-hot-2:/usr/share/elasticsearch/data
+    mem_limit: 2g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    networks: [elastic]
+
+  es-warm-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-warm-1
+    environment:
+      - node.name=es-warm-1
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - ./config/es-warm.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./certs/ca:/usr/share/elasticsearch/config/certs/ca:ro
+      - ./certs/instance:/usr/share/elasticsearch/config/certs/instance:ro
+      - es-data-warm-1:/usr/share/elasticsearch/data
+    mem_limit: 2g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    networks: [elastic]
+
+  es-warm-2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es-warm-2
+    environment:
+      - node.name=es-warm-2
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - ./config/es-warm.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./certs/ca:/usr/share/elasticsearch/config/certs/ca:ro
+      - ./certs/instance:/usr/share/elasticsearch/config/certs/instance:ro
+      - es-data-warm-2:/usr/share/elasticsearch/data
+    mem_limit: 2g
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    networks: [elastic]
+
+volumes:
+  es-data-master-1:
+  es-data-master-2:
+  es-data-master-3:
+  es-data-hot-1:
+  es-data-hot-2:
+  es-data-warm-1:
+  es-data-warm-2:
+
+networks:
+  elastic:
+    driver: bridge
