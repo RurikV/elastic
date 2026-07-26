@@ -1,0 +1,17 @@
+# --- Secrets & generated material ---
+.env
+certs/
+!setup/instances.yml
+
+# --- Elasticsearch / Kibana runtime data (named volumes live in Docker, but guard any bind mounts) ---
+data/
+kibana-data/
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# --- Claude local ---
+.claude/settings.local.json
