@@ -1,18 +1,19 @@
 filebeat.autodiscover:
   providers:
     - type: docker
-      hints.enabled: true
+      hints.enabled: false
       templates:
-        - condition.contains:
-            docker.container.image: elastic
+        - condition:
+            contains:
+              docker.container.image: elastic
           config:
             - type: filestream
               id: filebeat-${data.docker.container.id}
-              paths:
-                - /var/lib/docker/containers/${data.docker.container.id}/*.log
+              prospector.scanner.symlinks: true
               parsers:
                 - container: ~
-              prospector.scanner.symlinks: true
+              paths:
+                - /var/lib/docker/containers/${data.docker.container.id}/*.log
 
 processors:
   - add_docker_metadata:
