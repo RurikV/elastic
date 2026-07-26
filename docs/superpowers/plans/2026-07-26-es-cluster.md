@@ -230,6 +230,9 @@ docker run --rm \
   "$ES_IMAGE" \
   bash -c "elasticsearch-certutil ca --pem --out config/certs/ca.zip > /dev/null"
 
+# Unpack the CA now: the certutil cert step below needs ca/ca.crt and ca/ca.key.
+( cd certs && unzip -o -q ca.zip )
+
 echo "Generating node certificate ..."
 docker run --rm \
   -v "$PWD/certs:/usr/share/elasticsearch/config/certs" \
