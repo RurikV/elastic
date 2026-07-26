@@ -1,0 +1,16 @@
+instances:
+  - name: node
+    ip:
+      - 127.0.0.1
+    dns:
+      - localhost
+      - es-master-1
+      - es-master-2
+      - es-master-3
+      - es-hot-1
+      - es-hot-2
+      - es-warm-1
+      - es-warm-2
+      - kibana
+      - filebeat
+      - setup
