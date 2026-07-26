@@ -1,9 +1,7 @@
-# --- Secrets & generated material ---
-.env
+# --- Generated material (created by setup/generate-certs.sh) ---
 certs/
-!setup/instances.yml
 
-# --- Elasticsearch / Kibana runtime data (named volumes live in Docker, but guard any bind mounts) ---
+# --- Runtime bind-mount data (if ever used; named volumes live in Docker) ---
 data/
 kibana-data/
 
