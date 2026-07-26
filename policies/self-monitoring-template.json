@@ -1,0 +1,11 @@
+{
+  "index_patterns": ["self-monitoring-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "index.lifecycle.name": "self-monitoring-policy",
+      "index.lifecycle.rollover_alias": "self-monitoring"
+    }
+  }
+}
