@@ -6,3 +6,7 @@ elasticsearch.hosts: ["https://es-hot-1:9200"]
 elasticsearch.username: "kibana_system"
 elasticsearch.password: "${KIBANA_SYSTEM_PASSWORD}"
 elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/certs/ca/ca.crt"]
+
+# Required for connectors (actions) and alerting, which store secrets / state
+# as encrypted saved objects (e.g. the Telegram connector token).
+xpack.encryptedSavedObjects.encryptionKey: "elastic-hw3-demo-encryption-key-32c!"
