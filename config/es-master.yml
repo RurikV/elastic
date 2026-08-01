@@ -22,3 +22,4 @@ xpack.security.http.ssl.enabled: true
 xpack.security.http.ssl.certificate_authorities: [ "certs/ca/ca.crt" ]
 xpack.security.http.ssl.certificate: certs/instance/node.crt
 xpack.security.http.ssl.key: certs/instance/node.key
+path.repo: ["/usr/share/elasticsearch/snapshots"]

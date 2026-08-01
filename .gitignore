@@ -13,3 +13,4 @@ kibana-data/
 
 # --- Claude local ---
 .claude/settings.local.json
+snapshots/
